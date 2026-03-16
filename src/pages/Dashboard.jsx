@@ -94,7 +94,7 @@ export default function Dashboard() {
           <p className="text-3xl font-bold text-red-700">{formatCurrency(summary.total_sell)}</p>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/30">
-          <p className="text-sm text-indigo-600 font-medium mb-1">Net Cash Needed</p>
+          <p className="text-sm text-indigo-600 font-medium mb-1">Fresh Money Needed</p>
           <p className="text-3xl font-bold text-indigo-700">{formatCurrency(summary.net_cash_needed)}</p>
         </div>
       </div>
@@ -108,8 +108,8 @@ export default function Dashboard() {
             <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4">Fund Name</th>
-                <th className="px-6 py-4 text-right">Current %</th>
-                <th className="px-6 py-4 text-right">Target %</th>
+                <th className="px-6 py-4 text-right">Plan %</th>
+                <th className="px-6 py-4 text-right">Today %</th>
                 <th className="px-6 py-4 text-right">Drift</th>
                 <th className="px-6 py-4 text-center">Action</th>
                 <th className="px-6 py-4 text-right">Amount</th>
@@ -119,11 +119,11 @@ export default function Dashboard() {
               {items.map((item, idx) => (
                 <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900">
-                    {item.fund_name}
-                    {!item.is_model_fund && <span className="ml-2 text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">Not in Model</span>}
+                    <div>{item.fund_name}</div>
+                    {!item.is_model_fund && <div className="text-xs font-normal text-amber-600 mt-0.5">Note: Not in advisor plan</div>}
                   </td>
-                  <td className="px-6 py-4 text-right text-gray-600">{item.current_pct.toFixed(1)}%</td>
                   <td className="px-6 py-4 text-right font-medium">{item.target_pct !== null ? `${item.target_pct}%` : '-'}</td>
+                  <td className="px-6 py-4 text-right text-gray-600">{item.current_pct.toFixed(1)}%</td>
                   <td className="px-6 py-4 text-right">
                     {item.drift !== null ? (
                       <span className={item.drift > 0 ? 'text-emerald-600' : item.drift < 0 ? 'text-red-600' : 'text-gray-500'}>

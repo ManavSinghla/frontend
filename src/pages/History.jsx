@@ -72,7 +72,7 @@ export default function History() {
                   <th className="px-6 py-4 text-right">Portfolio Value</th>
                   <th className="px-6 py-4 text-right">Total BUY</th>
                   <th className="px-6 py-4 text-right">Total SELL</th>
-                  <th className="px-6 py-4 text-right">Net Cash Needed</th>
+                  <th className="px-6 py-4 text-right">Fresh Money Needed</th>
                   <th className="px-6 py-4 text-center">Status</th>
                 </tr>
               </thead>
