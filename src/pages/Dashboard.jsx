@@ -9,6 +9,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [alreadySaved, setAlreadySaved] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
 
   useEffect(() => {
     fetchPortfolio();
@@ -18,6 +20,9 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/portfolio`);
       setData(res.data);
+      // Reset saved state whenever fresh data is loaded
+      setAlreadySaved(false);
+      setSaveMessage('');
     } catch (error) {
       console.error(error);
     } finally {
@@ -30,9 +35,19 @@ export default function Dashboard() {
     try {
       await axios.post(`${API_BASE_URL}/api/rebalance/save`, data);
       setSavedSuccess(true);
+      setAlreadySaved(true);
+      setSaveMessage('Saved successfully');
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch (error) {
-      console.error('Failed to save', error);
+      if (error.response && error.response.status === 409) {
+        // No changes — already saved
+        setAlreadySaved(true);
+        setSaveMessage('Already up-to-date');
+      } else {
+        console.error('Failed to save', error);
+        setSaveMessage('Save failed');
+        setTimeout(() => setSaveMessage(''), 3000);
+      }
     } finally {
       setSaving(false);
     }
@@ -72,11 +87,16 @@ export default function Dashboard() {
         </div>
         <button
           onClick={saveRebalancing}
-          disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-all shadow-sm shadow-indigo-200 disabled:opacity-50"
+          disabled={saving || alreadySaved}
+          title={alreadySaved ? 'No changes to save. Portfolio data is unchanged since last save.' : ''}
+          className={`flex items-center gap-2 px-5 py-2.5 font-medium rounded-xl transition-all shadow-sm disabled:opacity-50 ${
+            alreadySaved
+              ? 'bg-gray-400 cursor-not-allowed shadow-gray-200 text-white'
+              : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200'
+          }`}
         >
-          {saving ? <RefreshCw className="w-5 h-5 animate-spin" /> : (savedSuccess ? <CheckCircle2 className="w-5 h-5" /> : <RefreshCw className="w-5 h-5" />)}
-          {saving ? 'Saving...' : (savedSuccess ? 'Saved successfully' : 'Save Rebalancing')}
+          {saving ? <RefreshCw className="w-5 h-5 animate-spin" /> : (savedSuccess || alreadySaved ? <CheckCircle2 className="w-5 h-5" /> : <RefreshCw className="w-5 h-5" />)}
+          {saving ? 'Saving...' : (saveMessage || 'Save Rebalancing')}
         </button>
       </div>
 
